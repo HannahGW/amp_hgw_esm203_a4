@@ -38,7 +38,16 @@ library(tidyr)
 
 lobster_abundance_sbc <- read_csv(here::here("data", "lobster_abundance_sbc_lter.csv"),
                                   na = "-99999") %>%
-  janitor::clean_names() 
+  janitor::clean_names() %>%  
+  mutate(site_name_long = case_when(
+    site %in% c("CARP") ~ "Carpinteria" ,
+    site %in% c("IVEE") ~ "Isla Vista",
+    site %in% c("AQUE") ~ "Arroyo Quemado",
+    site %in% c("MOHK") ~ "Mohawk", 
+    site %in% c("NAPL") ~ "Naples"))  %>% 
+  mutate(MPA = case_when( 
+    site %in% c("IVEE", "NAPL") ~ "MPA",
+    site %in% c("AQUE", "CARP", "MOHK") ~ "Non MPA"))
 
 ```
 
@@ -48,38 +57,19 @@ lobster_abundance_sbc <- read_csv(here::here("data", "lobster_abundance_sbc_lter
 annual_lobsters <- lobster_abundance_sbc %>% 
   group_by(site, year) %>% 
   summarise(yearly_lobsters=sum(count)) %>% 
-  mutate(site_name_long = case_when(
-    site %in% c("CARP") ~ "Carpinteria",
-    site %in% c("IVEE") ~ "Isla Vista",
-    site %in% c("AQUE") ~ "Arroyo Quemado",
-    site %in% c("MOHK") ~ "Mohawk", 
-    site %in% c("NAPL") ~ "Naples"))  %>% 
- mutate(MPA = case_when( 
-   site %in% c("IVEE", "NAPL") ~ "MPA",
-   site %in% c("AQUE", "CARP", "MOHK") ~ "Non MPA"))
+ 
     
 # graph
 ggplot(annual_lobsters, aes(x=year, y=yearly_lobsters)) +
-  geom_line(aes(color=site_name_long)) +
-  geom_point(aes(color=site_name_long)) + 
+  geom_line() +
+  geom_point() + 
   theme_minimal()+
   labs(x = "Year", y = "Annual Number of Observed Lobsters") +
   coord_cartesian(clip="off", xlim=c(2012,2018)) +
   theme(plot.margin=unit(c(1,6,1,1), "lines")) +
   annotate("text", label= "Isla Vista", x=Inf, y=875) 
 
-  geom_text(x = 2017.9, y = 250,
-            label = "MPA",
-            color = "purple",
-            size = 2.5,
-            hjust = 0,
-            vjust = 0) +
-  geom_text(x = 2017.9, y = 875,
-            label = "MPA", 
-            color = "seagreen", 
-            size = 2.5,
-            hjust = 0,
-            vjust = 0))
+  
 
 #gg highlight
   ### What do you think with the MPA listed on the graph? 
@@ -103,7 +93,12 @@ lobster_size <- lobster_abundance_tidy %>%
 
 ggplot(lobster_size, aes(x=size_mm)) +
   geom_density(aes(fill=year), position='identity', alpha=0.5) +
-  facet_wrap(~site)
+  theme_minimal() +
+  labs(x="Size (mm)", y="Density\n", title="Change in lobster size distribution between 2012 and 2018") +
+  theme(plot.title = element_text(hjust=0.5)) +
+  scale_x_continuous(lim=c(30, 130), breaks=seq(30,120, by=20)) +
+  facet_wrap(~site_name_long, scales="free_x") +
+  scale_fill_discrete(name="Year")
 
 
 
@@ -112,5 +107,7 @@ ggplot(lobster_size, aes(x=size_mm)) +
   # group_by(site)
   # summarize(avg_size = mean(size_mm))
 ```
+
+Figure_: this graph shows that the lobster size distribution has stayed relatively constant for 4 of the 5 sites: Arroyo Quemado, Carpinteria, Mohawk, and Naples. 
 
 #### 3. Result C: Compare mean lobster sizes at MPA vs Non-MPA sites (2012 - 2018)
