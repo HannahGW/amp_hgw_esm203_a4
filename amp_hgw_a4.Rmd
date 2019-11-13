@@ -108,6 +108,6 @@ ggplot(lobster_size, aes(x=size_mm)) +
   # summarize(avg_size = mean(size_mm))
 ```
 
-Figure_: this graph shows that the lobster size distribution has stayed relatively constant for 4 of the 5 sites: Arroyo Quemado, Carpinteria, Mohawk, and Naples. 
+Figure_: this graph shows that the lobster size distribution has stayed relatively constant for 4 of the 5 sites: Arroyo Quemado, Carpinteria, Mohawk, and Naples. For these sites, most lobster sizes were around 80mm in both 2012 ad 2018. The distributions became narrower and more centrlized around the mean between 2012 and 2018. (does this last sentence make sense? im trying to explain that the 2018 distribution is skinnier). However, lobster sizes at Isla Vista changed from 2012 to 2018. The lobster sizes were skewed to the left (or right?) in 2012 (n=_), with most surveyed lobster sizes observed at around 60mm, but in 2018 (n=_) the   
 
 #### 3. Result C: Compare mean lobster sizes at MPA vs Non-MPA sites (2012 - 2018)
