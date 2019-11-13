@@ -48,23 +48,26 @@ lobster_abundance_sbc <- read_csv(here::here("data", "lobster_abundance_sbc_lter
 annual_lobsters <- lobster_abundance_sbc %>% 
   group_by(site, year) %>% 
   summarise(yearly_lobsters=sum(count)) %>% 
-  mutate(site_name_long =case_when(
-    site %in% c("AQUE") ~ "Arroyo Quemado",
+  mutate(site_name_long = case_when(
     site %in% c("CARP") ~ "Carpinteria",
     site %in% c("IVEE") ~ "Isla Vista",
+    site %in% c("AQUE") ~ "Arroyo Quemado",
     site %in% c("MOHK") ~ "Mohawk", 
-    site %in% c("NAPL") ~ "Naples")) %>% 
-  mutate(MPA =case_when( 
-    site %in% c("IVEE", "NAPL") ~ "MPA",
-    site %in% c("AQUE", "CARP", "MOHK"), ~ "Not MPA"))
+    site %in% c("NAPL") ~ "Naples"))  %>% 
+ mutate(MPA = case_when( 
+   site %in% c("IVEE", "NAPL") ~ "MPA",
+   site %in% c("AQUE", "CARP", "MOHK") ~ "Non MPA"))
     
 # graph
 ggplot(annual_lobsters, aes(x=year, y=yearly_lobsters)) +
   geom_line(aes(color=site_name_long)) +
-  #geom_line(aes(year, yearly_lobsters, size=(MPA, 2)),data=annual_lobsters) 
   geom_point(aes(color=site_name_long)) + 
   theme_minimal()+
   labs(x = "Year", y = "Annual Number of Observed Lobsters") +
+  coord_cartesian(clip="off", xlim=c(2012,2018)) +
+  theme(plot.margin=unit(c(1,6,1,1), "lines")) +
+  annotate("text", label= "Isla Vista", x=Inf, y=875) 
+
   geom_text(x = 2017.9, y = 250,
             label = "MPA",
             color = "purple",
@@ -76,7 +79,7 @@ ggplot(annual_lobsters, aes(x=year, y=yearly_lobsters)) +
             color = "seagreen", 
             size = 2.5,
             hjust = 0,
-            vjust = 0)
+            vjust = 0))
 
 #gg highlight
   ### What do you think with the MPA listed on the graph? 
@@ -91,10 +94,21 @@ ggplot(annual_lobsters, aes(x=year, y=yearly_lobsters)) +
 
 ```{r}
 lobster_abundance_tidy <- lobster_abundance_sbc %>%
-  tidyr::uncount(count) 
+  tidyr::uncount(count)
 
 lobster_size <- lobster_abundance_tidy %>%
-  filter(year == c(2012, 2018)) ### Need help with this. My vision for this graph is to have overlapping histograms for 2012 and 2018, but to facet wrap it by site. I don't think we need to do any statistical analysis until C.  
+  filter(year == c("2018", "2012")) %>% 
+  mutate(year=as.character(year))
+
+
+ggplot(lobster_size, aes(x=size_mm)) +
+  geom_density(aes(fill=year), position='identity', alpha=0.5) +
+  facet_wrap(~site)
+
+
+
+
+## Need help with this. My vision for this graph is to have overlapping histograms for 2012 and 2018, but to facet wrap it by site. I don't think we need to do any statistical analysis until C.  
   # group_by(site)
   # summarize(avg_size = mean(size_mm))
 ```
