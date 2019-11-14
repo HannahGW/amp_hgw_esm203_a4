@@ -201,6 +201,20 @@ t.test(size_mm ~ year, data=lobster_size_Non_MPA)
 ```
 
 
+```{r}
+lobster_size_stats <- lobster_size %>% 
+  group_by(year, MPA) %>% 
+  summarize(Mean=mean(size_mm), 
+            Standard_Deviation=sd(size_mm))
+
+num_observations <- lobster_size %>% 
+  group_by(year,MPA) %>% 
+  count(year) 
+
+lobster_size_table_merged <- inner_join(lobster_size_stats, num_observations, by=c("MPA", "year"))
+```
+
+
 #### Citations 
 
 Reed D. 2019. SBC LTER: Reef: Abundance, size and fishing effort for California Spiny Lobster (Panulirus interruptus), ongoing since 2012. Environmental Data Initiative. https://doi.org/10.6073/pasta/a593a675d644fdefb736750b291579a0. Dataset accessed 11/13/2019.
