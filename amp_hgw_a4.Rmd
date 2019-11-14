@@ -14,13 +14,29 @@ knitr::opts_chunk$set(
 
 ### Introduction
 
-Enter short 7-8 sentence introduction here - describe the purpose/motivation of the research and preview the content of the report. 
+work in progress 
 
-- spiny lobsters, (*Panulirus interruptus*), are important predators in giant kelp forests. 
+In 2000, the Santa Barbara Coastal Term Ecological Long-Term Research (SBC LTER) program was established to better understand kelp forest ecosystems in southern California (https://sbclter.msi.ucsb.edu/ ; create citation later). Spiny lobsters (*Panulirus interruptus*, Figure 1), which are a focus of one of many SBC LTER studies, are an important predators in gaint kelp forests (Reed, 2019). Lobster abundance, size, and fishing pressure are part of an annual, on-going study that started in 2012 until, most recently, 2018. Studies were conducted at 5 sites near Santa Barabra County: Carpinteria, Isla Vista, Arroyo Quemado, Mohawk, and Naples (Figure 2). On January 1, 2012, marine protected areas (MPAs) were established at the Isla Vista and Naples sites. 
+
+MPA citation: https://wildaid.org/marine-protected-areas-101/
+
+
+
 
 ![](figures/wikipedia_lobster_Ed_Bierman.jpg)
 
-***Figure 1.** Spiny lobsters emerging from crack in sea floor. Credit: Ed Bierman, [Wikipedia](https://en.wikipedia.org/wiki/California_spiny_lobster)*
+**Figure 1:** California spiny lobsters (*Panulirus interruptus*) emerging from under a rock. Photo credit: Ed Bierman, Wikipedia. (create citation later:https://en.wikipedia.org/wiki/California_spiny_lobster) 
+
+
+
+
+![](figures/lobster_survey_sites.jpg)
+
+**Figure 2:** Map of the 5 locations lobster surveys took place. Survey sites from left to right: Arroyo Quemado, Naples (MPA), Isla Vista (MPA), Mohawk, Carpinteria. 
+
+
+
+
 
 ### Data and Methods
 
@@ -56,7 +72,7 @@ lobster_abundance_sbc <- read_csv(here::here("data", "lobster_abundance_sbc_lter
 # sub data set-----------------------------------------------------------------
 annual_lobsters <- lobster_abundance_sbc %>% 
   group_by(site, year) %>% 
-  summarise(yearly_lobsters=sum(count)) %>% 
+  summarise(yearly_lobsters=sum(count)) 
  
     
 # graph
@@ -76,21 +92,29 @@ ggplot(annual_lobsters, aes(x=year, y=yearly_lobsters)) +
 # weird to say annual, since the lobbsters are counted every month. Only during a couple months. 
 
 ```
-***Figure 2.** Lobster counts from 2012 to 2018 in MPAs (IVEE and NAPL) and Non-MPAs (AQUE, CARP, and MOHK). MPAs were established on January 1, 2012.*
+***Figure 3.** Lobster counts from 2012 to 2018 in MPAs (IVEE and NAPL) and Non-MPAs (AQUE, CARP, and MOHK). MPAs were established on January 1, 2012.*
 
 
 #### 2. Result B: Lobster size distribution shifts, 2012 vs 2018
 
-
+Figure __ shows that the lobster size distribution has stayed relatively constant for 4 of the 5 sites: Arroyo Quemado (2012 n=19, 2018 n=27), Carpinteria (2012 n= 39, 2018 n=172), Mohawk (2012 n= 41, 2018 n=82), and Naples (2012 n= 3, 2018 n=149). For these sites, most lobster sizes were around 80mm in both 2012 and 2018. The distributions became narrower and more centrlized around the mean between 2012 and 2018. (does this last sentence make sense? im trying to explain that the 2018 distribution is skinnier). This may be due to the small sample size in 2012, relative to 2018. Likely, a larger sample contained more of the true size distribution at each site.  However, lobster sizes at Isla Vista changed from 2012 to 2018. The lobster sizes were skewed to the left (or right?) in 2012 (n=13), with most surveyed lobster sizes observed around 60mm, but in 2018 (n=472) the distribution of lobster sizes followed a normal distribition that is similar to that of the other 4 sites; most lobster sizes are even around 80mm.
 ```{r}
+
+# enter description here
 lobster_abundance_tidy <- lobster_abundance_sbc %>%
   tidyr::uncount(count)
 
+# sub-data: keep only years 2012 nad 2018
 lobster_size <- lobster_abundance_tidy %>%
   filter(year == c("2018", "2012")) %>% 
-  mutate(year=as.character(year))
+  mutate(year=as.character(year)) # this code added becuase ggplot wouldnt recognize our year column correctly (would display color based on year aesthetic). Changing the values to characters helped over come this error
 
+# determine sample size for each class/year
+num_observations <- lobster_size %>% 
+  group_by(site) %>% 
+  count(year)
 
+# plot description
 ggplot(lobster_size, aes(x=size_mm)) +
   geom_density(aes(fill=year), position='identity', alpha=0.5) +
   theme_minimal() +
@@ -108,6 +132,75 @@ ggplot(lobster_size, aes(x=size_mm)) +
   # summarize(avg_size = mean(size_mm))
 ```
 
-Figure_: this graph shows that the lobster size distribution has stayed relatively constant for 4 of the 5 sites: Arroyo Quemado, Carpinteria, Mohawk, and Naples. For these sites, most lobster sizes were around 80mm in both 2012 ad 2018. The distributions became narrower and more centrlized around the mean between 2012 and 2018. (does this last sentence make sense? im trying to explain that the 2018 distribution is skinnier). However, lobster sizes at Isla Vista changed from 2012 to 2018. The lobster sizes were skewed to the left (or right?) in 2012 (n=_), with most surveyed lobster sizes observed at around 60mm, but in 2018 (n=_) the   
+Figure 4: The change in lobster size (mm) distributions at five sites on the California coast in 2012 and 2018. 
+
+ 
+
 
 #### 3. Result C: Compare mean lobster sizes at MPA vs Non-MPA sites (2012 - 2018)
+
+```{r}
+# do some data spread graphs first?
+
+
+# Question 1:For 2012 observations, is there a significant difference in lobster size between MPA and non-MPA sites? 
+
+  # H null = there is no difference in MPA vs non-MPA lobster size in 2012
+  # H alternative = there is a difference in MPA vs non-MPA lobster size in 2012
+  # significance value: p = 0.05
+  # stat test= 2 sample t test
+
+# sub-data: only include observations from 2012
+lobster_size_2012 <- lobster_size %>% 
+  filter(year==2012) 
+
+#  welch's 2 sample t test
+t.test(size_mm ~ MPA, data=lobster_size_2012)
+
+# Question 2: For 2018 observations, is there a significant difference in lobster size between MPA and non-MPA sites? 
+
+  # H null = there is no difference in MPA vs non-MPA lobster size in 2018
+  # H alternative = there is a difference in MPA vs non-MPA lobster size in 2012
+  # significance value: p = 0.05
+  # stat test= 2 sample t test
+
+# sub-data: only include observations from 2018
+lobster_size_2018 <- lobster_size %>% 
+  filter(year==2018) 
+
+#  welch's 2 sample t test
+t.test(size_mm ~ MPA, data=lobster_size_2018)
+
+# Question 3:	For MPA sites only, is there a significant mean size difference in lobsters observed in 2012 vs. 2018?
+
+  # H null = there is no difference in MPA 2012 vs MPA 2018 lobster size
+  # H alternative = there is a difference in MPA 2012 vs MPA 2018 lobster size
+  # significance value: p = 0.05
+  # stat test= 2 sample t test
+
+# sub-data: only include MPA observations from 2012 and 2018
+lobster_size_MPA <- lobster_size %>% 
+  filter(MPA == "MPA") 
+
+#  welch's 2 sample t test
+t.test(size_mm ~ year, data=lobster_size_MPA)
+
+# Question 4: For non-MPA sites only, is there a significant mean size difference in lobsters observed in 2012 vs. 2018?
+
+  # H null = there is no difference in MPA 2012 vs MPA 2018 lobster size
+  # H alternative = there is a difference in MPA 2012 vs MPA 2018 lobster size
+  # significance value: p = 0.05
+  # stat test= 2 sample t test
+
+# sub-data: only include Non MPA observations from 2012 and 2018
+lobster_size_Non_MPA <- lobster_size %>% 
+  filter(MPA == "Non MPA") 
+
+#  welch's 2 sample t test
+t.test(size_mm ~ year, data=lobster_size_Non_MPA)
+```
+
+
+#### Citations 
+
+Reed D. 2019. SBC LTER: Reef: Abundance, size and fishing effort for California Spiny Lobster (Panulirus interruptus), ongoing since 2012. Environmental Data Initiative. https://doi.org/10.6073/pasta/a593a675d644fdefb736750b291579a0. Dataset accessed 11/13/2019.
