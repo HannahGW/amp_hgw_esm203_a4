@@ -40,8 +40,7 @@ MPA citation: https://wildaid.org/marine-protected-areas-101/
 
 ### Data and Methods
 
-Data for spiny lobster abundance, size, and fishing efforts was collected from August 2012 to December 2018 by the [Santa Barbara Coastal Long-Term Ecological Research (LTER)](http://sbc.lternet.edu//index.html). Data was collected annually by divers in late summer before the start of fishing season at five long-term kelp forest study sites. For more information on collection methods and spatial information, please see the [metadata](https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-sbc&identifier=77&revision=newest). Lobster observations were based on observations from a diver searching 2.5 m areas on opposite sides of a 60 m transect tape, searching through cracks, caves, and other structures. Counts and sizes (mm) of lobsters were compared in Marine Protected Areas (MPA) and Non-Marine Protected Areas (Non-MPA). **Complete section about t-tests and alphas after done with A-C**
-Trends in lobster counts and sizes were compared in MPA and Non-MPA by linear regression. All analyses and figures were prepared using R software version 3.6.1. Collaboration between authors was done using GitHub. 
+Data for spiny lobster abundance, size, and fishing efforts was collected from August 2012 to December 2018 by the [Santa Barbara Coastal Long-Term Ecological Research (LTER)](http://sbc.lternet.edu//index.html). Data was collected annually by divers in late summer before the start of fishing season at five long-term kelp forest study sites. For more information on collection methods and spatial information, please see the [metadata](https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-sbc&identifier=77&revision=newest). Lobster counts were based on visual observations from a diver searching 2.5 m areas on opposite sides of a 60 m transect tape. Counts and sizes (mm) of lobsters were compared in Marine Protected Areas (MPA) and Non-Marine Protected Areas (Non-MPA). The differences in mean lobster size in MPAs and Non-MPAs were compared by two-sample t-tests ($\alpha$ = 0.05 throughout). Trends in lobster counts and sizes were compared in MPA and Non-MPA by linear regression. All analyses and figures were prepared using R software version 3.6.1. Collaboration between authors was done using GitHub. 
 
 ### Results
 #### 1. Result A: Changes in lobster abundance by site (2012 - 2018)
@@ -89,18 +88,21 @@ ggplot(annual_lobsters, aes(x=year, y=yearly_lobsters)) +
   labs(x = "Year", y = "Annual Number of Observed Lobsters") +
   coord_cartesian(clip="off", xlim=c(2012,2018)) +
   theme(plot.margin=unit(c(1,6,1,1), "lines")) +
+  scale_color_manual(values = c("black", "black", "maroon", "black", "maroon")) +
   annotate("text", label= "Isla Vista", 
            x = Inf, 
            y = 940, 
            size = 3,
            hjust = 0,
-           vjust = 0) +
+           vjust = 0,
+           color = "maroon") +
   annotate("text", label = "Naples",
            x = Inf,
            y = 270,
            size = 3,
            hjust = 0,
-           vjust = 0) +
+           vjust = 0,
+           color = "maroon") +
   annotate("text", label = "Arroyo Quemado",
            x = Inf,
            y = 33,
@@ -187,6 +189,8 @@ lobster_size_2012 <- lobster_size %>%
 
 size_ttest_2012 <- t.test(size_mm ~ MPA, data=lobster_size_2012)
 
+size_ttest_2012
+
 # Question 2: For 2018 observations, is there a significant difference in lobster size between MPA and non-MPA sites? 
 
   # H null = there is no difference in MPA vs non-MPA lobster size in 2018
@@ -202,9 +206,11 @@ lobster_size_2018 <- lobster_size %>%
 
 size_ttest_2018 <- t.test(size_mm ~ MPA, data=lobster_size_2018)
 
-# Question 3:	For MPA sites only, is there a significant mean size difference in lobsters observed in 2012 vs. 2018?
+size_ttest_2018
 
-  # H null = there is no difference in MPA 2012 vs MPA 2018 lobster size
+# Question 3:	For MPA sites only, is there a significant difference in lobsters observed in 2012 vs. 2018?
+
+  # H null = there is no difference in lobster observations in MPAs in 2012 vs MPAs in 2018
   # H alternative = there is a difference in MPA 2012 vs MPA 2018 lobster size
   # significance value: p = 0.05
   # stat test= 2 sample t test
@@ -216,6 +222,8 @@ lobster_size_MPA <- lobster_size %>%
 #  welch's 2 sample t test
 
 MPA_size_ttest <- t.test(size_mm ~ year, data=lobster_size_MPA)
+
+MPA_size_ttest
 
 # Question 4: For non-MPA sites only, is there a significant mean size difference in lobsters observed in 2012 vs. 2018?
 
@@ -263,7 +271,12 @@ lobster_table
 ***Figure 5.** Results from two sample t-tests comparing mean lobster sizes at MPA and Non-MPA sites in 2012 and 2018. Data: SBC LTER.*
 
 
-For observations in 2012, mean lobster sizes between MPA (`r round(size_ttest_2012$estimate[1],2)`) and Non-MPA sites (`r round(size_ttest_2012$estimate[2],2)`) did not differ significantly (t(`r round(size_ttest_2012$parameter,2)`) = `r round(size_ttest_2012$statistic,2)`, *p* = `r round(size_ttest_2012$p.value,2)`). IN PROGRESS...
+For observations in 2012, mean lobster sizes between MPA (`r round(size_ttest_2012$estimate[1],2)`) and Non-MPA sites (`r round(size_ttest_2012$estimate[2],2)`) did not differ significantly (t(`r round(size_ttest_2012$parameter,2)`) = `r round(size_ttest_2012$statistic,2)`, *p* = `r round(size_ttest_2012$p.value,2)`). The 95% confidence interval for MPAs (`r round(size_ttest_2012$conf.int[1],2)`) vary from the confidence interval of Non-MPAs (`r round(size_ttest_2012$conf.int[2],2)`). Because of the discrepency between the confidnce intervals, the p-value is not the best indiciation of the significance of mean differences... FINISH EXPLANATION: list actual differences, % changes, and measure of uncertainty. 
+
+For observations in 2018, mean lobster sizes between MPA (`r round(size_ttest_2018$estimate[1],2)`) and Non-MPA sites (`r round(size_ttest_2018$estimate[2],2)`) did vary significantly (t(`r round(size_ttest_2018$parameter,2)`) = `r round(size_ttest_2018$statistic,2)`, *p* = `r round(size_ttest_2018$p.value,2)`). The confidence intervals for MPAs (`r round(size_ttest_2018$conf.int[1],2)`) and Non-MPAs (`r round(size_ttest_2018$conf.int[2],2)`) are much smaller than the ones calculate above, which is a good indication that the p-value is representative of the mean differences between MPAs and Non-MPAs.
+FINISH EXPLANATION...
+
+In MPA sites, the difference in lobster observations in 2012 
 
 
 
