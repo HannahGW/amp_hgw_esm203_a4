@@ -43,8 +43,13 @@ MPA citation: https://wildaid.org/marine-protected-areas-101/
 Data for spiny lobster abundance, size, and fishing efforts was collected from August 2012 to December 2018 by the [Santa Barbara Coastal Long-Term Ecological Research (LTER)](http://sbc.lternet.edu//index.html). Data was collected annually by divers in late summer before the start of fishing season at five long-term kelp forest study sites. For more information on collection methods and spatial information, please see the [metadata](https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-sbc&identifier=77&revision=newest). Lobster counts were based on visual observations from a diver searching 2.5 m areas on opposite sides of a 60 m transect tape. Counts and sizes (mm) of lobsters were compared in Marine Protected Areas (MPA) and Non-Marine Protected Areas (Non-MPA). The differences in mean lobster size in MPAs and Non-MPAs were compared by two-sample t-tests ($\alpha$ = 0.05 throughout). Trends in lobster counts and sizes were compared in MPA and Non-MPA by linear regression. All analyses and figures were prepared using R software version 3.6.1. Collaboration between authors was done using GitHub. 
 
 ### Results
-#### 1. Result A: Changes in lobster abundance by site (2012 - 2018)
-The effects of creating Marine Protected Areas (MPAs) can be seen in Figure 2. At Isla Vista (IVEE), it seems the creation of an MPA has significantly increase the lobster counts from less than 125 individuals in 2012, to over 800 individuals in 2018. Compared to Naples, another MPA, lobster counts stayed relatively constant, similar to Non-MPA sites.  FINISH RESULTS SECTION ...
+#### Result A: Changes in lobster abundance by site (2012 - 2018)
+The impact of creating Marine Protected Areas (MPAs) on lobster abundance can be seen in Figure 2. At the Isla Vista MPA, lobster abundance dramatically increased over 3,500% from 13 to 472 observed lobsters from 2012 to 2018. While lobster abundance at the Naples MPA wasn't as high as that at Isla Vista MPA in 2018 (n=149), Naples had a larger percent increase (over 4,800% increase) from 2012-2018. Comparatively, lobster abundance at the non-MPA sites, Carpinteria, Mohawk, and Arroyo Quemado, only had a 341%, 42%, and 100% increase from 2012-2018, respectively.  
+
+
+The total number of lobsters in MPAs increased over 3,700% from 16 lobsters in 2012 to 621 lobster observations in 2018, while the bumber of observed lobsters only increased 183% from 99 lobsters in 2012 to 281 lobsters in 2018.  
+
+However, these changes in lobster abundance weren't as apparent until about 2014. 
 ```{r}
 # Install packages
 
@@ -54,6 +59,7 @@ library(here)
 library(tidyr)
 library(kableExtra)
 library(effsize)
+library(dplyr)
 
 # Read in data and clean/wrangle
 
@@ -270,17 +276,23 @@ Non_MPA_size_ttest
 
 
 ```{r}
+# data from 1: mean and standard deviation for MPA and non MPAs in 2012 and 2018
 lobster_size_stats <- lobster_size %>% 
   group_by(year, MPA) %>% 
   summarize(Mean=mean(size_mm), 
             Standard_Deviation=sd(size_mm))
 
-num_observations <- lobster_size %>% 
-  group_by(year,MPA) %>% 
-  count(year) 
 
+# data frame 2: sample size for MPA and non MPAs in 2012 and 2018
+num_observations <- annual_lobsters %>%
+#    dplyr::filter(year == c("2018", "2012"))
+    group_by(MPA, year) %>% 
+    summarize(sample_size=sum(yearly_lobsters)) 
+
+# merge data frames 
 lobster_size_table_merged <- inner_join(lobster_size_stats, num_observations, by=c("MPA", "year"))
 
+# create table with mean, standard deviation, and sample size for MPA and non MPAs in 2012 and 2018
 lobster_table <- lobster_size_table_merged %>%
   kable(col.names = c("Year", 
                     "MPA status",
