@@ -44,6 +44,7 @@ Data for spiny lobster abundance, size, and fishing efforts was collected from A
 
 ### Results
 #### Result A: Changes in lobster abundance by site (2012 - 2018)
+
 The impact of creating Marine Protected Areas (MPAs) on lobster abundance can be seen in Figure 2. At the Isla Vista MPA, lobster abundance dramatically increased over 3,500% from 26 to 946 observed lobsters from 2012 to 2018; Isla Vista had the highest number of lobster observations in 2018. While lobster abundance at the Naples MPA wasn't as high as that at Isla Vista MPA in 2018 (n=298), Naples had a larger percent increase (over 4,800% increase) from 2012-2018. Comparatively, lobster abundance at the non-MPA sites, Carpinteria, Arroyo Quemado and Mohawk, only had a 339%, 98%, and 42% increase from 2012-2018, respectively.  
 
 
@@ -139,11 +140,9 @@ ggplot(annual_lobsters, aes(x=year, y=yearly_lobsters)) +
            size = 3,
            hjust = -0.18,
            vjust = 0)
-
-
  
 ```
-**Figure 3.** Lobster counts in MPAs (Isla Vista and Naples) and Non-MPAs (Carpinteria, Mohawk, and Arroyo Quemado). MPAs were established on January 1, 2012. Lobsters were counted in the months of August through December from 2012-2018. Data: SBC LTER.*
+***Figure 3.** Lobster counts in MPAs (in red) and non-MPAs (in black). MPAs were established on January 1, 2012. Lobsters were counted in the months of August through December from 2012-2018. Data: SBC LTER.*
 
 
 #### Result B: Lobster size distribution shifts, 2012 vs 2018
@@ -153,24 +152,20 @@ The lobster size distribution in the five study sites is shown in Figure 4. Lobs
 
 ```{r}
 # Uncount lobster observations
-
 lobster_abundance_tidy <- lobster_abundance_sbc %>%
   tidyr::uncount(count)
 
 # sub-data: keep only years 2012 and 2018
-
 lobster_size <- lobster_abundance_tidy %>%
   filter(year == c("2018", "2012")) %>% 
   mutate(year=as.character(year)) ### this code added becuase ggplot wouldnt recognize our year column correctly (would display color based on year aesthetic). Changing the values to characters helped over come this error
 
 # determine sample size for each class/year
-
 num_observations <- lobster_size %>% 
   group_by(site) %>% 
   count(year)
 
 # graph for distribution of lobster sizes in 2012 and 2018 
-
 ggplot(lobster_size, aes(x=size_mm)) +
   geom_density(aes(fill=year), position='identity', alpha=0.5) +
   theme_minimal() +
@@ -189,9 +184,37 @@ ggplot(lobster_size, aes(x=size_mm)) +
 
 #### Result C: Is there a differnce between mean lobster sizes at MPA vs Non-MPA sites (2012 - 2018)?
 
-```{r}
-# do some data spread graphs first?
+```{r, include=FALSE}
 
+# Q-Q plots to explore data and check for normal distribution/linear regressions
+
+  # QQ plot for sample size for 2012 lobsters - distribution is normal.
+lobster_size_2012 <- lobster_size %>%
+  filter(year == 2012)
+
+ggplot(lobster_size_2012, aes(sample = size_mm)) +
+  geom_qq()
+
+  # QQ plot for sample size for 2018 lobsters - distribution is normal.
+lobster_size_2018 <- lobster_size %>%
+  filter(year == 2018)
+
+ggplot(lobster_size_2018, aes(sample = size_mm)) +
+  geom_qq()
+
+  # QQ plot for MPA only site for distribution of sample lobster size - distribution is normal. 
+lobster_size_MPA <- lobster_size %>%
+  filter(MPA == "MPA")
+
+ggplot(lobster_size_MPA, aes(sample = size_mm)) +
+  geom_qq()
+
+  # QQ plot for Non-MPA only site for distribution of sample lobster size - distribution is normal. 
+lobster_size_Non_MPA <- lobster_size %>%
+  filter(MPA == "Non MPA")
+
+ggplot(lobster_size_Non_MPA, aes(sample = size_mm)) +
+  geom_qq()
 
 # Question 1:For 2012 observations, is there a significant difference in lobster size between MPA and non-MPA sites? 
 
@@ -233,7 +256,7 @@ size_ttest_2018
 Q2_effectsize <- cohen.d(lobster_size_2018$size_mm, lobster_size_2018$MPA) 
 
 
-# Question 3:	For MPA sites only, is there a significant difference in lobsters observed in 2012 vs. 2018?
+# Question 3:	For MPA sites only, is there a significant difference in lobster size means observed in 2012 vs. 2018?
 
   # H null = there is no difference in lobster observations in MPAs in 2012 vs MPAs in 2018
   # H alternative = there is a difference in MPA 2012 vs MPA 2018 lobster size
@@ -313,15 +336,16 @@ lobster_table
 
 ***Figure 5.** Results from two sample t-tests comparing mean lobster sizes at MPA and Non-MPA sites in 2012 and 2018. Data: SBC LTER.*
 
+It is worth noting that all size observations recorded by divers were visually estimated. There is a chance that actual lobster size varies. Effect sizes recorded below do not account for the accuracy of assessment (Sullivan and Feinn, 2012). (do you think this paragraph is needed?)
 
-For observations in 2012, mean lobster sizes between MPA (`r round(size_ttest_2012$estimate[1],2)`) and Non-MPA sites (`r round(size_ttest_2012$estimate[2],2)`) did not differ significantly (t(`r round(size_ttest_2012$parameter,2)`) = `r round(size_ttest_2012$statistic,2)`, *p* = `r round(size_ttest_2012$p.value,2)`). The 95% confidence interval for MPAs (`r round(size_ttest_2012$conf.int[1],2)`) vary from the confidence interval of Non-MPAs (`r round(size_ttest_2012$conf.int[2],2)`). Because of the discrepency between the confidnce intervals, the p-value is not the best indiciation of the significance of mean differences... FINISH EXPLANATION: list actual differences, % changes, and measure of uncertainty. 
+For observations in 2012, mean lobster sizes between MPA (`r round(size_ttest_2012$estimate[1],2)`) and Non-MPA sites (`r round(size_ttest_2012$estimate[2],2)`) did not differ significantly (t(`r round(size_ttest_2012$parameter,2)`) = `r round(size_ttest_2012$statistic,2)`, *p* = `r round(size_ttest_2012$p.value,2)`) according to the p-value. The actual difference in means for 2012 (`r round(size_ttest_2012$estimate[1],2)`) and 2018 (`r round(size_ttest_2012$estimate[2],2)`) is 4.91. We determined that the p-value came back as insignificant because of the low sample sizes collected in 2012. In 2012, only 115 observations were recorded for both MPA and non-MPAs, compared to 2018 where 902 observations were recorded for both MPA and non-MPAs.  
 
-For observations in 2018, mean lobster sizes between MPA (`r round(size_ttest_2018$estimate[1],2)`) and Non-MPA sites (`r round(size_ttest_2018$estimate[2],2)`) did vary significantly (t(`r round(size_ttest_2018$parameter,2)`) = `r round(size_ttest_2018$statistic,2)`, *p* = `r round(size_ttest_2018$p.value,2)`). The confidence intervals for MPAs (`r round(size_ttest_2018$conf.int[1],2)`) and Non-MPAs (`r round(size_ttest_2018$conf.int[2],2)`) are much smaller than the ones calculate above, which is a good indication that the p-value is representative of the mean differences between MPAs and Non-MPAs.
-FINISH EXPLANATION...
+For observations in 2018, mean lobster sizes between MPA (`r round(size_ttest_2018$estimate[1],2)`) and non-MPA sites (`r round(size_ttest_2018$estimate[2],2)`) did vary significantly (t(`r round(size_ttest_2018$parameter,2)`) = `r round(size_ttest_2018$statistic,2)`, *p* = `r round(size_ttest_2018$p.value,2)`). To measure the magnitude of the difference between MPA and non-MPA sites in 2018, we calcualted the effect size (`r round(Q2_effectsize$estimate,1)`). A relatively smaller effect size revealed that though the difference in means was more difficult to observe, there was indeed a difference between population means. 
 
-In MPA sites, the difference in lobster observations in 2012 
+In MPA sites, the difference in mean lobster size observations in 2012 (`r round(MPA_size_ttest$estimate[1],2)`) and 2018 (`r round(MPA_size_ttest$estimate[2],2)`) did vary significantly (t(`r round(MPA_size_ttest$parameter,2)`) = `r round(MPA_size_ttest$statistic,2)`, *p* = `r round(MPA_size_ttest$p.value,2)`). The large effect size (`r round(Q3_effectsize$estimate,1)`) for MPA sites reveals that the difference in lobster means in 2012 and 2018 was indeed substantial.  
+(Do you think this is finished?)
 
-
+In Non-MPA sites, the difference in mean lobster size observations in 2012 (`r round(Non_MPA_size_ttest$estimate[1],2)`) and 2018 (`r round(Non_MPA_size_ttest$estimate[2],2)`) did not vary significantly (t(`r round(Non_MPA_size_ttest$parameter,2)`) = `r round(Non_MPA_size_ttest$statistic,2)`, *p* = `r round(Non_MPA_size_ttest$p.value,2)`). When looking at the acutal means of the two samples, we determined that the p-value was true and that the two sample means did not vary significantly. No effect size test was necessary. (is that ok to say??) (do you agree this is finished?)
 
 ### Summary
 
@@ -332,4 +356,8 @@ In MPA sites, the difference in lobster observations in 2012
 
 ### Citations 
 
-Reed D. 2019. SBC LTER: Reef: Abundance, size and fishing effort for California Spiny Lobster (Panulirus interruptus), ongoing since 2012. Environmental Data Initiative. https://doi.org/10.6073/pasta/a593a675d644fdefb736750b291579a0. Dataset accessed 11/13/2019.
+**Bierman, Ed.** "California spiny lobster." *Wikipedia*, 09/17/2016, https://en.wikipedia.org/wiki/California_spiny_lobster.
+
+**Reed D. 2019.** SBC LTER: Reef: Abundance, size and fishing effort for California Spiny Lobster (Panulirus interruptus), ongoing since 2012. Environmental Data Initiative. https://doi.org/10.6073/pasta/a593a675d644fdefb736750b291579a0. Dataset accessed 11/13/2019.
+
+**Sullivan, Gail M, and Richard Feinn.** “Using Effect Size-or Why the P Value Is Not Enough.” Journal of graduate medical education vol. 4,3 (2012): 279-82. doi:10.4300/JGME-D-12-00156.1. Date accessed 11/16/2019. 
