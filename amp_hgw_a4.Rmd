@@ -53,6 +53,7 @@ library(janitor)
 library(here)
 library(tidyr)
 library(kableExtra)
+library(effsize)
 
 # Read in data and clean/wrangle
 
@@ -76,56 +77,67 @@ lobster_abundance_sbc <- read_csv(here::here("data", "lobster_abundance_sbc_lter
 # annual lobster sub data set
 
 annual_lobsters <- lobster_abundance_sbc %>% 
-  group_by(site_name_long, year) %>% 
+  group_by(site_name_long, year, MPA) %>% 
   summarise(yearly_lobsters=sum(count)) 
  
 # graph of annual lobster counts from 2012 - 2018
 
 ggplot(annual_lobsters, aes(x=year, y=yearly_lobsters)) +
-  geom_line(aes(color = site_name_long), show.legend = FALSE) +
+  geom_line(aes(color=site_name_long), show.legend = FALSE) +
   geom_point(aes(color = site_name_long), show.legend = FALSE) + 
   theme_minimal() +
-  labs(x = "Year", y = "Annual Number of Observed Lobsters") +
-  coord_cartesian(clip="off", xlim=c(2012,2018)) +
-  theme(plot.margin=unit(c(1,6,1,1), "lines")) +
+  labs(x = "\nYear", y = "Annual Number of Observed Lobsters\n", 
+       title="Annual Lobster Abundance from 2012-2018\n") +
+  coord_cartesian(clip="off", 
+                  xlim=c(2012,2018)) +
+  theme(plot.margin=unit(c(1,10,1,1), "lines"),
+        plot.title = element_text(hjust=0.5),
+        legend.position = "right",
+        legend.title=element_blank()) +
+  scale_fill_discrete(name= "MPA Status") +
   scale_color_manual(values = c("black", "black", "maroon", "black", "maroon")) +
+  scale_x_continuous(lim=c(2012, 2018), 
+                     expand=c(0,0)) +
+  scale_y_continuous(lim=c(0, 1000), 
+                     expand=c(0,0),
+                     breaks=seq(0,1000, by=250)) +
   annotate("text", label= "Isla Vista", 
            x = Inf, 
            y = 940, 
            size = 3,
-           hjust = 0,
+           hjust = -0.2,
            vjust = 0,
            color = "maroon") +
   annotate("text", label = "Naples",
            x = Inf,
            y = 270,
            size = 3,
-           hjust = 0,
+           hjust = -0.25,
            vjust = 0,
            color = "maroon") +
   annotate("text", label = "Arroyo Quemado",
            x = Inf,
            y = 33,
            size = 3,
-           hjust = 0,
+           hjust = -0.1,
            vjust = 0) +
   annotate("text", label = "Mohawk",
            x = Inf,
            y = 145,
            size = 3,
-           hjust = 0,
+           hjust = -0.2,
            vjust = 0) +
   annotate("text", label = "Carpinteria",
            x = Inf,
            y = 330,
            size = 3,
-           hjust = 0,
+           hjust = -0.18,
            vjust = 0)
 
-# Still need to gg highlight the MPA vs Non-MPA!
+
  
 ```
-***Figure 3.** Lobster counts from 2012 to 2018 in MPAs (IVEE and NAPL) and Non-MPAs (AQUE, CARP, and MOHK). MPAs were established on January 1, 2012. Data: SBC LTER.*
+**Figure 3.** Lobster counts in MPAs (Isla Vista and Naples) and Non-MPAs (Carpinteria, Mohawk, and Arroyo Quemado). MPAs were established on January 1, 2012. Lobsters were counted in the months of August through December from 2012-2018. Data: SBC LTER.*
 
 
 #### 2. Result B: Lobster size distribution shifts, 2012 vs 2018
@@ -158,7 +170,8 @@ ggplot(lobster_size, aes(x=size_mm)) +
   theme_minimal() +
   labs(x="Size (mm)", y="Density\n", title="Change in lobster size distribution between 2012 and 2018") +
   theme(plot.title = element_text(hjust=0.5)) +
-  scale_x_continuous(lim=c(30, 130), breaks=seq(30,120, by=20)) +
+  scale_x_continuous(lim=c(30, 130), expand=c(0,0), breaks=seq(30,120, by=20)) +
+  scale_y_continuous(lim=c(0, 0.06), expand=c(0,0)) +
   facet_wrap(~site_name_long, scales="free_x") +
   scale_fill_discrete(name="Year")
 
@@ -191,6 +204,7 @@ size_ttest_2012 <- t.test(size_mm ~ MPA, data=lobster_size_2012)
 
 size_ttest_2012
 
+
 # Question 2: For 2018 observations, is there a significant difference in lobster size between MPA and non-MPA sites? 
 
   # H null = there is no difference in MPA vs non-MPA lobster size in 2018
@@ -207,6 +221,11 @@ lobster_size_2018 <- lobster_size %>%
 size_ttest_2018 <- t.test(size_mm ~ MPA, data=lobster_size_2018)
 
 size_ttest_2018
+
+# effect size (p< 0.05)
+
+Q2_effectsize <- cohen.d(lobster_size_2018$size_mm, lobster_size_2018$MPA) 
+
 
 # Question 3:	For MPA sites only, is there a significant difference in lobsters observed in 2012 vs. 2018?
 
@@ -225,6 +244,11 @@ MPA_size_ttest <- t.test(size_mm ~ year, data=lobster_size_MPA)
 
 MPA_size_ttest
 
+#effect size (p < 0.05)
+Q3_effectsize <- cohen.d(lobster_size_MPA$size_mm, lobster_size_MPA$year) 
+
+Q3_effectsize
+
 # Question 4: For non-MPA sites only, is there a significant mean size difference in lobsters observed in 2012 vs. 2018?
 
   # H null = there is no difference in MPA 2012 vs MPA 2018 lobster size
@@ -238,7 +262,11 @@ lobster_size_Non_MPA <- lobster_size %>%
 
 #  welch's 2 sample t test
 Non_MPA_size_ttest <- t.test(size_mm ~ year, data=lobster_size_Non_MPA)
+
+Non_MPA_size_ttest
+
 ```
+
 
 
 ```{r}
@@ -261,13 +289,14 @@ lobster_table <- lobster_size_table_merged %>%
                     "Sample population")) %>%
   kable_styling(bootstrap_options = "striped",
                 full_width = F,
-                position = "left") %>%
+                position = "center") %>%
   add_header_above(c("Mean lobster sizes at MPA vs Non-MPA sites in 2012 and 2018" = 5)) 
 
 lobster_table
 
 
 ```
+
 ***Figure 5.** Results from two sample t-tests comparing mean lobster sizes at MPA and Non-MPA sites in 2012 and 2018. Data: SBC LTER.*
 
 
