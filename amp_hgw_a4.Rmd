@@ -1,5 +1,5 @@
 ---
-title: "Lobster Abundance, Size, and Fishing Effort off the Santa Barbara Coast"
+title: "Change in Lobster Abundance and Size off the Santa Barbara Coast (2012-2018)"
 author: "Hannah Garcia-Wickstrum & Anne-Marie Parkinson"
 date: "11/6/2019"
 output: html_document
@@ -44,12 +44,12 @@ Data for spiny lobster abundance, size, and fishing efforts was collected from A
 
 ### Results
 #### Result A: Changes in lobster abundance by site (2012 - 2018)
-The impact of creating Marine Protected Areas (MPAs) on lobster abundance can be seen in Figure 2. At the Isla Vista MPA, lobster abundance dramatically increased over 3,500% from 13 to 472 observed lobsters from 2012 to 2018. While lobster abundance at the Naples MPA wasn't as high as that at Isla Vista MPA in 2018 (n=149), Naples had a larger percent increase (over 4,800% increase) from 2012-2018. Comparatively, lobster abundance at the non-MPA sites, Carpinteria, Mohawk, and Arroyo Quemado, only had a 341%, 42%, and 100% increase from 2012-2018, respectively.  
+The impact of creating Marine Protected Areas (MPAs) on lobster abundance can be seen in Figure 2. At the Isla Vista MPA, lobster abundance dramatically increased over 3,500% from 26 to 946 observed lobsters from 2012 to 2018; Isla Vista had the highest number of lobster observations in 2018. While lobster abundance at the Naples MPA wasn't as high as that at Isla Vista MPA in 2018 (n=298), Naples had a larger percent increase (over 4,800% increase) from 2012-2018. Comparatively, lobster abundance at the non-MPA sites, Carpinteria, Arroyo Quemado and Mohawk, only had a 339%, 98%, and 42% increase from 2012-2018, respectively.  
 
 
-The total number of lobsters in MPAs increased over 3,700% from 16 lobsters in 2012 to 621 lobster observations in 2018, while the bumber of observed lobsters only increased 183% from 99 lobsters in 2012 to 281 lobsters in 2018.  
+The total number of lobsters in MPAs increased over 3,700% from 32 lobster observations in 2012 to 1,244 lobster observations in 2018. In the three non-MPA study sites, the total number of observed lobsters only increased 182% from 199 lobsters in 2012 to 561 lobsters in 2018.  
 
-However, these changes in lobster abundance weren't as apparent until about 2014. 
+Talk a bit about the general fluctions/trends of the lines? ex/ aque stayed relatively constant throughout the study period?
 ```{r}
 # Install packages
 
@@ -146,9 +146,9 @@ ggplot(annual_lobsters, aes(x=year, y=yearly_lobsters)) +
 **Figure 3.** Lobster counts in MPAs (Isla Vista and Naples) and Non-MPAs (Carpinteria, Mohawk, and Arroyo Quemado). MPAs were established on January 1, 2012. Lobsters were counted in the months of August through December from 2012-2018. Data: SBC LTER.*
 
 
-#### 2. Result B: Lobster size distribution shifts, 2012 vs 2018
+#### Result B: Lobster size distribution shifts, 2012 vs 2018
 
-Figure 4 shows that the lobster size distribution has stayed relatively constant for 4 of the 5 sites: Arroyo Quemado (2012 n=19, 2018 n=27), Carpinteria (2012 n= 39, 2018 n=172), Mohawk (2012 n= 41, 2018 n=82), and Naples (2012 n= 3, 2018 n=149). For these sites, most lobster sizes were around 80mm in both 2012 and 2018. The distributions became narrower and more centrlized around the mean between 2012 and 2018. (does this last sentence make sense? im trying to explain that the 2018 distribution is skinnier). This may be due to the small sample size in 2012, relative to 2018. Likely, a larger sample contained more of the true size distribution at each site.  However, lobster sizes at Isla Vista changed from 2012 to 2018. The lobster sizes were skewed to the left (or right?) in 2012 (n=13), with most surveyed lobster sizes observed around 60mm, but in 2018 (n=472) the distribution of lobster sizes followed a normal distribition that is similar to that of the other 4 sites; most lobster sizes are even around 80mm.
+The lobster size distribution in the five study sites is shown in Figure 4. Lobster size distribution has stayed relatively constant for four of the five sites: Arroyo Quemado (2012 n=19, 2018 n=27), Carpinteria (2012 n= 39, 2018 n=172), Mohawk (2012 n= 41, 2018 n=82), and Naples (2012 n= 3, 2018 n=149). For these sites, most lobster sizes were around 80mm in both 2012 and 2018. The distributions became narrower and more centrlized around the mean between 2012 and 2018. (does this last sentence make sense? im trying to explain that the 2018 distribution is skinnier). This may be due to the small sample size in 2012, relative to 2018. Likely, a larger sample contained more of the true size distribution at each site.  However, lobster sizes at Isla Vista changed from 2012 to 2018. The lobster sizes were skewed to the left (or right?) in 2012 (n=13), with most surveyed lobster sizes observed around 60mm, but in 2018 (n=472) the distribution of lobster sizes followed a normal distribition that is similar to that of the other 4 sites; most lobster sizes are even around 80mm.
 
 
 ```{r}
@@ -187,7 +187,7 @@ ggplot(lobster_size, aes(x=size_mm)) +
 
  
 
-#### 3. Result C: Compare mean lobster sizes at MPA vs Non-MPA sites (2012 - 2018)
+#### Result C: Is there a differnce between mean lobster sizes at MPA vs Non-MPA sites (2012 - 2018)?
 
 ```{r}
 # do some data spread graphs first?
@@ -285,9 +285,11 @@ lobster_size_stats <- lobster_size %>%
 
 # data frame 2: sample size for MPA and non MPAs in 2012 and 2018
 num_observations <- annual_lobsters %>%
-#    dplyr::filter(year == c("2018", "2012"))
     group_by(MPA, year) %>% 
-    summarize(sample_size=sum(yearly_lobsters)) 
+    summarize(sample_size=sum(yearly_lobsters)) %>% 
+    ungroup(year) %>% 
+    mutate(year=as.character(year)) %>% 
+    dplyr::filter(year %in% c("2018", "2012"))  # fixed it!!
 
 # merge data frames 
 lobster_size_table_merged <- inner_join(lobster_size_stats, num_observations, by=c("MPA", "year"))
