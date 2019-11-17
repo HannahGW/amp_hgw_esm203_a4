@@ -45,12 +45,12 @@ Data for spiny lobster abundance, size, and fishing efforts was collected from A
 ### Results
 #### Result A: Changes in lobster abundance by site (2012 - 2018)
 
-The impact of creating Marine Protected Areas (MPAs) on lobster abundance can be seen in Figure 2. At the Isla Vista MPA, lobster abundance dramatically increased over 3,500% from 26 to 946 observed lobsters from 2012 to 2018; Isla Vista had the highest number of lobster observations in 2018. While lobster abundance at the Naples MPA wasn't as high as that at Isla Vista MPA in 2018 (n=298), Naples had a larger percent increase (over 4,800% increase) from 2012-2018. Comparatively, lobster abundance at the non-MPA sites, Carpinteria, Arroyo Quemado and Mohawk, only had a 339%, 98%, and 42% increase from 2012-2018, respectively.  
+The impact of creating Marine Protected Areas (MPAs) on lobster abundance can be seen in Figure 2. At the Isla Vista MPA, lobster abundance dramatically increased over 3,500% from 26 to 946 observed lobsters from 2012 to 2018; Isla Vista had the highest number of lobster observations in 2018. While lobster abundance at the Naples MPA wasn't as high as that at Isla Vista MPA in 2018 (n=298), Naples had a larger percent increase (over 4,800% increase) from 2012-2018. However, this dramatic increase may be attributed to the very small number of observed lobsters at Naples in 2012. Comparatively, lobster abundance at the non-MPA sites, Carpinteria, Arroyo Quemado and Mohawk, only had a 339%, 98%, and 42% increase from 2012-2018, respectively.  
 
 
 The total number of lobsters in MPAs increased over 3,700% from 32 lobster observations in 2012 to 1,244 lobster observations in 2018. In the three non-MPA study sites, the total number of observed lobsters only increased 182% from 199 lobsters in 2012 to 561 lobsters in 2018.  
 
-Talk a bit about the general fluctions/trends of the lines? ex/ aque stayed relatively constant throughout the study period?
+
 ```{r}
 # Install packages
 
@@ -147,7 +147,11 @@ ggplot(annual_lobsters, aes(x=year, y=yearly_lobsters)) +
 
 #### Result B: Lobster size distribution shifts, 2012 vs 2018
 
-The lobster size distribution in the five study sites is shown in Figure 4. Lobster size distribution has stayed relatively constant for four of the five sites: Arroyo Quemado (2012 n=19, 2018 n=27), Carpinteria (2012 n= 39, 2018 n=172), Mohawk (2012 n= 41, 2018 n=82), and Naples (2012 n= 3, 2018 n=149). For these sites, most lobster sizes were around 80mm in both 2012 and 2018. The distributions became narrower and more centrlized around the mean between 2012 and 2018. (does this last sentence make sense? im trying to explain that the 2018 distribution is skinnier). This may be due to the small sample size in 2012, relative to 2018. Likely, a larger sample contained more of the true size distribution at each site.  However, lobster sizes at Isla Vista changed from 2012 to 2018. The lobster sizes were skewed to the left (or right?) in 2012 (n=13), with most surveyed lobster sizes observed around 60mm, but in 2018 (n=472) the distribution of lobster sizes followed a normal distribition that is similar to that of the other 4 sites; most lobster sizes are even around 80mm.
+The lobster size distribution in the five study sites in 2012 and 2018 is shown in Figure 4. Lobster size distribution has stayed relatively constant for two non MPAs in 2012 and 2018: Carpinteria (2012 n= 78, 2018 n=343) and Mohawk (2012 n= 83, 2018 n=164). The lobster sizes followed a mean distribution and the means were around 75mm. The other MPA, Arroyo Quemado (2012 n=38, 2018 n=54), had a bi-modal distribition in 2012; the two modes occuring around 65mm and 90mm. However, in 2018 lobster sizes in Arroyo Quemado followed a similar distribtion as the other non MPAs. 
+
+In 2012, lobster sizes at both MPAs, Isla Vista (n=26) and Naples (n=6), were right skewed. Most observed lobsters were around 65mm. However, in 2018 the distribution of lobster sizes (Isla Vista n=946, Naples n=298) followed a normal distribition that is similar to that of the other Non MPA sites in 2018. 
+
+In 2018, all sites followed a normal distribition and means were around 75mm. Small sample size at Naples and Isla Vista could account for the skewed distribution. Arroyo Quemado also had a small sample size compared to the other non MPAs. Likely, the larger number of observations displayed the true population distribution.
 
 
 ```{r}
@@ -178,7 +182,7 @@ ggplot(lobster_size, aes(x=size_mm)) +
 
 ```
 
-***Figure 4:** The change in lobster size (mm) distributions at five sites on the California coast in 2012 (pink) and 2018 (blue). Population sizes in 2012 range from n=3 to n=41, and were lower than population sizes in 2018, which range from n=27 to n=472. MPA sites (Isla Vista and Naples) show higher densities of larger-sized lobsters in 2018 compared to 2012. Data: SBC LTER.*
+***Figure 4:** The change in lobster size (mm) distributions at five sites on the California coast in 2012 (pink) and 2018 (blue). Sample size in 2012 ranged from 6 to 83, while sample size in 2018 ranged from 54-946. All sites had an increase in number of observaed lobsters. Both MPAs, Isla Vista and Naples, were right skewed in 2012. Arroyo Quemado was the only non-MPA that did not follow a normal distribution. All sites followed  normal distribution in 2018 and all means averaged around 75mm. Data: SBC LTER.*
 
  
 
@@ -307,7 +311,7 @@ Non_MPA_size_ttest
 ```
 
 
-
+***Table 1.** Results from two sample t-tests comparing mean lobster sizes at MPA and Non-MPA sites in 2012 and 2018. Data: SBC LTER.*
 ```{r}
 # data from 1: mean and standard deviation for MPA and non MPAs in 2012 and 2018
 lobster_size_stats <- lobster_size %>% 
@@ -344,7 +348,7 @@ lobster_table
 
 ```
 
-***Figure 5.** Results from two sample t-tests comparing mean lobster sizes at MPA and Non-MPA sites in 2012 and 2018. Data: SBC LTER.*
+
 
 It is worth noting that all size observations recorded by divers were visually estimated. There is a chance that actual lobster size varies. Effect sizes recorded below do not account for the accuracy of assessment (Sullivan and Feinn, 2012). (do you think this paragraph is needed?)
 
