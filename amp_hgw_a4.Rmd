@@ -32,7 +32,7 @@ MPAs are sections of the ocean reserved for conservation of ecosystems, habitats
 ![](figures/lobster_survey_sites.jpg)
 
 </center>
-***Figure 2:** Map of the 5 locations lobster surveys took place. Survey sites from left to right: Arroyo Quemado, Naples (MPA), Isla Vista (MPA), Mohawk, Carpinteria.* 
+***Figure 2:** Map of the five locations lobster surveys took place. Survey sites from left to right: Arroyo Quemado, Naples (MPA), Isla Vista (MPA), Mohawk, Carpinteria.* 
 
 
 ### Data and Methods
