@@ -144,7 +144,7 @@ ggplot(annual_lobsters, aes(x=year, y=yearly_lobsters)) +
 
 ```
 
-***Figure 3.** Lobster counts in MPAs (red) and non-MPAs (black) from 2012 to 2018. MPA lobster counts in 2012 were close to zero, and increased to over 250 individuals at Naples MPA and over 800 individuals at Isla Vista MPA. Non-MPAs also experienced higher lobster counts in 2018 compared to 2012, however, the results were not as significant to those in MPA sites. Data: SBC LTER.*
+***Figure 3.** Annual lobster counts in MPAs (red) and non-MPAs (black) from 2012 to 2018. Both MPAs and non-MPAs lobster observations increased between 2012 and 2018, however MPAs had a much greater increase in lobster observations ( mean 3,700% increase) than non-MPAs (mean 182% increase). Data: SBC LTER.*
 
 
 #### Result B: Lobster size distribution shifts, 2012 vs 2018
@@ -200,7 +200,7 @@ ggplot(lobster_size,
 
 ```
 
-***Figure 4:** The change in lobster size (mm) distributions at five sites on the California coast in 2012 (pink) and 2018 (blue). All sites except Mohawk and Carpinteria experienced an increase in size of observed lobsters between 2012 and 2018. Both MPAs, Isla Vista and Naples, were right skewed in 2012. Arroyo Quemado was the only non-MPA that did not follow a normal distribution. All sites followed normal distribution in 2018 and all means averaged around 75mm. Data: SBC LTER.*
+***Figure 4:** The change in lobster size (mm) distributions at five sites on the California coast in 2012 (pink) and 2018 (blue). All sites except Mohawk and Carpinteria experienced a mean increase in size of observed lobsters between 2012 and 2018. Data: SBC LTER.*
 
  
 #### Result C: Is there a differnce between mean lobster sizes at MPA vs non-MPA sites in 2012 and 2018?
